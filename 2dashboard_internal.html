@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -267,7 +267,34 @@ header .right {
       const hash = location.hash.replace('#', '') || 'home';
       navigate(hash);
     });
-  </script>
+   </script>
+
+
+  <script type="module">
+  import { db } from "./firebase-init.js";
+  import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+  const container = document.getElementById("daftarProduk");
+
+  const dataRef = ref(db, "produk/");
+  onValue(dataRef, (snapshot) => {
+    container.innerHTML = ""; // reset tampilan
+    const data = snapshot.val();
+    for (const id in data) {
+      const p = data[id];
+      container.innerHTML += `
+        <div class="card">
+          <h3>${p.nama}</h3>
+          <p>Kategori: ${p.kategori}</p>
+          <p>Harga: Rp${p.harga}</p>
+          <button onclick="detailProduk('${id}')">Lihat Detail</button>
+        </div>
+      `;
+    }
+  });
+ }
+</script>
+
 </body>
 </html>
 
