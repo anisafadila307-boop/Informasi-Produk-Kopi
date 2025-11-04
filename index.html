@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8" />
@@ -144,20 +144,20 @@
   <script>
     // ====== FUNGSI LOGIN (gabungan kode awal kamu) ======
     function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+  const username = document.getElementById("loginUser").value.trim();
+  const password = document.getElementById("loginPass").value.trim();
 
-      const validUser = "admin";
-      const validPass = "kopi123";
+  const validUser = "admin";
+  const validPass = "kopi123";
 
-      if (username === validUser && password === validPass) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("lastPage", "index.html");
-        window.location.href = "2dashboard_internal.html";
-      } else {
-        alert("Username atau password salah!");
-      }
-    }
+  if (username === validUser && password === validPass) {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("lastPage", "index.html");
+    window.location.href = "2dashboard_internal.html";
+  } else {
+    alert("Username atau password salah!");
+  }
+}
 
     // ===== Modal Login =====
     document.getElementById('btnLoginHeader').addEventListener('click', () => {
