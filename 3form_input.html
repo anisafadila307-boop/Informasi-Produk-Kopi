@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -99,7 +99,6 @@ button:hover{background:var(--brown3);}
       </select></div>
     <div><label>Deskripsi</label><textarea id="deskripsi" placeholder="Tuliskan deskripsi umum produk kopi"></textarea></div>
     <div><label>Gambar Profil</label><input type="file" id="gambarProfil" accept="image/*"><img id="previewProfil" class="preview" style="display:none;"></div>
-    <div><label>Gambar Background Halaman Detail</label><input type="file" id="gambarBg" accept="image/*"><img id="previewBg" class="preview" style="display:none;"></div>
     <button type="submit">Simpan Produk</button>
   </form>
 
@@ -125,7 +124,7 @@ function previewImage(input,targetId){
   reader.readAsDataURL(file);
 }
 document.getElementById('gambarProfil').addEventListener('change',e=>previewImage(e.target,'previewProfil'));
-document.getElementById('gambarBg').addEventListener('change',e=>previewImage(e.target,'previewBg'));
+
 
 // cek apakah edit mode
 const editMode=localStorage.getItem('editMode')==='true';
@@ -138,7 +137,6 @@ if(editMode && editData){
   });
   if(editData.jenis)setJenis(editData.jenis);
   if(editData.gambarProfil){previewProfil.src=editData.gambarProfil;previewProfil.style.display='block';}
-  if(editData.gambarBg){previewBg.src=editData.gambarBg;previewBg.style.display='block';}
 }else{
   resetEdit();
 }
@@ -161,7 +159,7 @@ document.getElementById('produkForm').addEventListener('submit',e=>{
     defect:defect.value.trim(),ukuran:ukuran.value.trim(),
     deskripsi:deskripsi.value.trim(),aroma:aroma.value.trim(),
     rasa:rasa.value.trim(),keasaman:keasaman.value,body:body.value,
-    gambarProfil:previewProfil.src,gambarBg:previewBg.src,tanggal:Date.now()
+    gambarProfil:previewProfil.src,tanggal:Date.now()
   };
 
   const data=JSON.parse(localStorage.getItem(LS_KEY)||'[]');
@@ -174,8 +172,33 @@ document.getElementById('produkForm').addEventListener('submit',e=>{
 
   if(jenis==='Biji Kopi Mentah')location.href='int_mentah.html';
   else if(jenis==='Biji Kopi Roasted')location.href='int_roasted.html';
-  else location.href='int_bubuk.html';
+  else location.href='int_kopi_bubuk.html';
 });
+
+<script type="module">
+  import { db } from "./firebase-init.js";
+  import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+  const form = document.getElementById("produkForm");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const dataProduk = {
+      nama: document.getElementById("nama").value,
+      kategori: document.getElementById("kategori").value,
+      harga: document.getElementById("harga").value,
+      deskripsi: document.getElementById("deskripsi").value,
+      gambarProfil: document.getElementById("previewProfil").src || "",
+      tanggal: Date.now()
+    };
+
+    const newRef = push(ref(db, "produk/"));
+    await set(newRef, dataProduk);
+    alert("Data produk berhasil disimpan!");
+    form.reset();
+  });
 </script>
+
 </body>
 </html>
