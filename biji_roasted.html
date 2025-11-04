@@ -1,0 +1,301 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halaman Produk Biji Kopi Roasted</title>
+<style>
+body{
+  font-family: "Arial", sans-serif;
+  margin: 0px;
+  padding: 0px;
+  background:#faf7f3;
+  color:#3e2723;
+}
+h1{text-align:center;color:#6b4226;}
+p.desc{text-align:center;color:#5d4037;}
+.card {
+  width: 300px;         /* lebar card tetap */
+  max-width: 100%;      /* agar responsif */
+  background: white;
+  padding: 5px 20px 20px 20px; /* atas kanan bawah kiri */
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  margin: 10px 0;                 /* biar ada jarak antar card */
+  transition: transform 0.15s, box-shadow 0.2s;
+  max-width: 400px;
+  text-align: center;             /* isi teks & gambar di tengah */
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 card per baris */
+  gap: 20px; /* jarak antar card */
+  justify-content: center;
+  justify-items: center; /* supaya tiap card di tengah */
+  padding: 20px;
+}
+
+.card img {
+  display: block;
+  margin: 10px auto;              /* gambar juga di tengah */
+  border-radius: 10px;
+  width: 300px;       /* atur ukuran tetap (misalnya 200px lebar) */
+  height: 200px;       /*tinggi*/
+  object-fit: cover;  /* potong gambar jika tidak proporsional */
+}
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-back{
+  position: absolute;       /* agar bisa ditempatkan bebas */
+  top: 80px;                /* jarak dari atas halaman */
+  left: 30px;               /* jarak dari sisi kiri */
+  background:#6b4226;
+  color:white;
+  padding:8px 16px;
+  border-radius:5px;
+  text-decoration:none;
+  font-size:14px;
+  transition: background 0.2s;
+}
+.btn-back:hover{
+  background:#4e342e;
+}
+h1 {
+  text-align: center;
+  color: #6b4226;
+  margin-top: 70px;   /* jarak tambahan agar tidak menempel ke tombol */
+}
+#produkList{
+  max-width:800px;
+  margin:30px auto;
+}
+
+:root{ --bg:#f7f3ef; --card:#ffffff; --accent:#6b4226; --accent-2:#8b5e3c; --muted:#6b6b6b; --brown1:#3e2723; --brown2:#4e342e; }
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg); color:#222}
+
+/* ===== Tambahan agar bar coklat menempel & teks putih ===== */
+header {
+  background-color: #7b4a27;  
+  color: #fff !important;
+  padding:14px 24px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between;
+  margin:0;
+}
+header img{height:42px; margin-right:12px}
+header .left{display:flex; align-items:center; gap:0px}
+header h1{
+  margin:0;
+  font-size:18px;
+  color:#fff !important;
+}
+
+header .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-header {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-header:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-detail{
+  border:none;border-radius:6px;padding:6px 10px;cursor:pointer;
+  color:#fff;font-size:13px;margin-right:6px;
+}
+
+.btn-detail{background-color:#a0522d;}
+.btn-detail:hover{background-color:#f4a460;}
+
+.btn-group {
+  margin-top: 10px;
+}
+
+/* ===== Modal Login ===== */
+.hidden{display:none}
+.overlay{position:fixed; inset:0;background:rgba(10,10,10,0.45); display:flex; align-items:center; justify-content:center; z-index:60}
+.modal{width:100%; max-width:420px; background:var(--card); border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(10,10,10,0.15)}
+.modal h2{margin:0 0 12px 0}
+.form-row{display:flex; flex-direction:column; gap:8px}
+input[type=text], input[type=password]{padding:10px; border-radius:8px; border:1px solid #ddd}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+
+<body>
+<header>
+  <div class="left">
+    <img src="https://www.gochambers.com/wp-content/uploads/2022/08/logo-6.png" alt="Logo AEKI AICE" />
+    <h1>Portal Informasi Kopi Indonesia</h1>
+  </div>
+  <div>
+    <button id="btnLoginHeader" class="btn-header" style="background:var(--accent)">Login</button>
+  </div>
+</header>
+
+<h1>Biji Kopi Roasted</h1>
+<p class="desc">Informasi lengkap mengenai biji kopi roasted.</p>
+
+<div id="produkList" class="container"></div>
+
+<div style="text-align:center">
+  <a class="btn-back" href="index.html">← Kembali ke Dashboard</a>
+</div>
+
+<!-- Template Modal Login -->
+<template id="modalTemplate">
+  <div class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h2>Login</h2>
+      <form id="loginForm" action="/login" method="POST">
+        <div class="form-row">
+          <label class="small">Email atau Username</label>
+          <input type="text" name="username" id="loginUser" required placeholder="contoh@domain.com" />
+          <label class="small">Kata Sandi</label>
+          <input type="password" name="password" id="loginPass" required placeholder="••••••" />
+          <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end">
+            <button type="button" id="loginCancel" class="btn-header" style="background:transparent; color:var(--accent-2); border:1px dashed rgba(107,66,38,0.12)">Batal</button>
+            <button type="submit" class="btn-header" style="background:var(--accent)">Masuk</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+/* ====== Data Produk dari LocalStorage ====== */
+const LS_KEY = 'produkKopiLengkap_v3';
+let data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+const list = document.getElementById('produkList');
+const roasted = data.filter(p => p.jenis === 'Biji Kopi Roasted');
+
+/* ====== Render Daftar Produk ====== */
+function renderList(){
+  list.innerHTML = '';
+  const roasted = data.filter(p => p.jenis === 'Biji Kopi Roasted');
+  if(!roasted.length){
+    list.innerHTML = '<p style="text-align:center;color:#777;">Belum ada produk biji kopi roasted.</p>';
+    return;
+  }
+  roasted.forEach((p, i)=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <h3>${p.nama}</h3>
+      <p><b>Asal:</b> ${p.asal}</p>
+      <p><b>Grade:</b> ${p.grade}</p>
+      <p><b>Harga:</b> Rp ${Number(p.harga||0).toLocaleString()}</p>      
+      ${p.gambarProfil ? `<img src="${p.gambarProfil}" style="max-width:200px;border-radius:10px;margin-top:10px;">` : ''}
+      <div class="btn-group">
+        <button class="btn-detail" onclick="lihatDetail(${i})">Lihat Detail</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ====== Fungsi Login Modal ====== */
+document.addEventListener('click', e =>{
+  if(e.target.id === 'btnLoginHeader'){
+    openLoginModal();
+  }
+});
+function openLoginModal(){
+  const tpl = document.getElementById('modalTemplate');
+  const node = tpl.content.cloneNode(true);
+  document.body.appendChild(node);
+  const overlay = document.querySelector('.overlay');
+  const cancel = document.getElementById('loginCancel');
+  cancel.addEventListener('click', closeTopModal);
+  overlay.addEventListener('click', (ev) => { if(ev.target === overlay) closeTopModal(); });
+  function closeTopModal(){ const ov = document.querySelector('.overlay'); if(ov) ov.remove(); }
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    const ov = document.querySelector('.overlay');
+    if(ov) ov.remove();
+  }
+});
+document.addEventListener('submit', (e) => {
+  if (e.target.id === 'loginForm') {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const validUser = "admin";
+    const validPass = "kopi123";
+    if (user === validUser && pass === validPass) {
+      const ov = document.querySelector('.overlay');
+      if (ov) ov.remove();
+      window.location.href = "2dashboard_internal.html";
+    } else {
+      alert("Username atau kata sandi salah. Silakan coba lagi.");
+    }
+  }
+});
+
+function lihatDetail(index){
+  const roasted=data.filter(p=>p.jenis==='Biji Kopi Roasted');
+  const produk=roasted[index];
+  if(produk){
+    localStorage.setItem('produkDetail',JSON.stringify(produk));
+    localStorage.setItem('lastPage','int_roasted.html');
+    window.location.href='detail_produk_dinamis.html';
+  }
+}
+
+// Fungsi pemuatan data detail (dipakai di halaman detail_produk_dinamis.html)
+function loadDetailProduk(){
+  const produk=JSON.parse(localStorage.getItem('produkDetail'));
+  if(!produk) return;
+  document.body.innerHTML=`
+    <a href="${localStorage.getItem('lastPage')||'int_roasted.html'}" 
+       style="display:inline-block;margin:20px;background:#6b4226;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;">← Kembali</a>
+    <div style="max-width:600px;margin:40px auto;background:white;padding:30px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);text-align:center;">
+      <h2>${produk.nama}</h2>
+      ${produk.gambarProfil?`<img src="${produk.gambarProfil}" style="width:300px;height:200px;object-fit:cover;border-radius:10px;margin:10px 0;">`:''}
+      <p><b>Jenis:</b> ${produk.jenis}</p>
+      <p><b>Asal:</b> ${produk.asal}</p>
+      <p><b>Grade:</b> ${produk.grade}</p>
+      <p><b>Harga:</b> Rp ${Number(produk.harga||0).toLocaleString()}</p>
+      <p><b>Deskripsi:</b> ${produk.deskripsi||'-'}</p>
+    </div>`;
+}
+
+/* ====== Jalankan ====== */
+renderList();
+</script>
+
+</body>
+</html>

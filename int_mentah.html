@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halaman Produk Biji Kopi Mentah</title>
+<style>
+body{
+  font-family:"Arial",sans-serif;
+  margin:0;
+  padding:0;
+  background:#faf7f3;
+  color:#3e2723;
+}
+h1{text-align:center;color:#6b4226;}
+p.desc{text-align:center;color:#5d4037;}
+.card{
+  width: 300px;         /* lebar card tetap */
+  max-width: 100%;      /* agar responsif */
+  background:white;
+  padding:5px 20px 20px 20px;
+  border-radius:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  margin:10px 0;
+  transition:transform 0.15s,box-shadow 0.2s;
+  max-width:400px;
+  text-align:center;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 card per baris */
+  gap: 20px; /* jarak antar card */
+  justify-content: center;
+  justify-items: center; /* supaya tiap card di tengah */
+  padding: 20px;
+}
+.card img {
+  display: block;
+  margin: 10px auto;              /* gambar juga di tengah */
+  border-radius: 10px;
+  width: 300px;       /* atur ukuran tetap (misalnya 200px lebar) */
+  height: 200px;       /*tinggi*/
+  object-fit: cover;  /* potong gambar jika tidak proporsional */
+}
+
+.card:hover{transform:translateY(-3px);
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.btn-back{
+  position:absolute;
+  top:80px;
+  left:30px;
+  background:#6b4226;
+  color:white;
+  padding:8px 16px;
+  border-radius:5px;
+  text-decoration:none;
+  font-size:14px;
+  transition:background 0.2s;
+}
+.btn-back:hover{
+  background:#4e342e;
+}
+h1 {
+  text-align: center;
+  color: #6b4226;
+  margin-top: 70px;   /* jarak tambahan agar tidak menempel ke tombol */
+}
+#produkList{
+  max-width:800px;
+  margin:30px auto;
+}
+
+:root{ --bg:#f7f3ef; --card:#ffffff; --accent:#6b4226; --accent-2:#8b5e3c; --muted:#6b6b6b; --brown1:#3e2723; --brown2:#4e342e; }
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg); color:#222}
+
+header{
+  background-color:#7b4a27;color:#fff !important;padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;margin:0;
+}
+header img{height:42px;margin-right:12px;}
+header .left{display:flex;align-items:center;gap:12px;}
+header h1{margin:0;font-size:18px;color:#fff !important;}
+header .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-header {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-header:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-edit,.btn-delete,.btn-detail{
+  border:none;border-radius:6px;padding:6px 10px;cursor:pointer;
+  color:#fff;font-size:13px;margin-right:6px;
+}
+.btn-edit{background-color:#8b5e3c;}
+.btn-edit:hover{background-color:#a4714e;}
+.btn-delete{background-color:#c0392b;}
+.btn-delete:hover{background-color:#e74c3c;}
+.btn-detail{background-color:#a0522d;}
+.btn-detail:hover{background-color:#f4a460;}
+.btn-group{margin-top:10px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="left">
+    <img src="https://www.gochambers.com/wp-content/uploads/2022/08/logo-6.png" alt="Logo AEKI AICE" />
+    <h1>Portal Informasi Kopi Indonesia</h1>
+  </div>
+
+  <div class="right">
+    <button class="btn-header" onclick="navigateToInput()">Input</button>
+    <button class="btn-header" onclick="logout()">Log Out</button>
+  </div>
+</header>
+
+
+<h1>Biji Kopi Mentah</h1>
+<p class="desc">Informasi lengkap mengenai biji kopi mentah dari berbagai daerah di Indonesia.</p>
+
+<div id="produkList" class="container"></div>
+<a class="btn-back" href="2dashboard_internal.html">← Kembali ke Dashboard</a>
+
+
+<script>
+const LS_KEY='produkKopiLengkap_v3';
+let data=JSON.parse(localStorage.getItem(LS_KEY)||'[]');
+const list=document.getElementById('produkList');
+
+function renderList(){
+  list.innerHTML='';
+  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
+  if(!mentah.length){
+    list.innerHTML='<p style="text-align:center;color:#777;">Belum ada produk biji kopi mentah.</p>';
+    return;
+  }
+  mentah.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.innerHTML=`
+      <h3>${p.nama}</h3>
+      <p><b>Asal:</b> ${p.asal}</p>
+      <p><b>Grade:</b> ${p.grade}</p>
+      <p><b>Harga:</b> Rp ${Number(p.harga||0).toLocaleString()}</p>
+      ${p.gambarProfil ? `<img src="${p.gambarProfil}" style="max-width:200px;border-radius:10px;margin-top:10px;">` : ''}
+      <div class="btn-group">
+        <button class="btn-edit" onclick="editProduk(${i})">Edit</button>
+        <button class="btn-delete" onclick="hapusProduk(${i})">Hapus</button>
+        <button class="btn-detail" onclick="lihatDetail(${i})">Lihat Detail</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function editProduk(index){
+  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
+  const produk=mentah[index];
+  if(produk){
+    const allIndex=data.findIndex(x=>x.nama===produk.nama&&x.jenis===produk.jenis);
+    localStorage.setItem('produkEdit',JSON.stringify(produk));
+    localStorage.setItem('produkEditIndex',allIndex);
+    localStorage.setItem('editMode','true');
+    window.location.href='3form_input.html';
+  }
+}
+
+function hapusProduk(index){
+  if(confirm("Apakah Anda yakin ingin menghapus produk ini?")){
+    const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
+    const target=mentah[index];
+    data=data.filter(p=>p!==target);
+    localStorage.setItem(LS_KEY,JSON.stringify(data));
+    renderList();
+  }
+}
+
+function lihatDetail(index){
+  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
+  const produk=mentah[index];
+  if(produk){
+    localStorage.setItem('produkDetail',JSON.stringify(produk));
+    localStorage.setItem('lastPage','int_mentah.html');
+    window.location.href='detail_produk_dinamis.html';
+  }
+}
+
+document.querySelector('.btn-back').addEventListener('click',()=>{
+  localStorage.removeItem('produkEdit');
+  localStorage.removeItem('produkEditIndex');
+  localStorage.removeItem('editMode');
+});
+
+function navigateToInput() {
+  // arahkan ke halaman form input
+  window.location.href = '3form_input.html';
+}
+
+
+function logout() {
+  // hapus semua data sesi pengguna dan kembali ke halaman login/dashboard awal
+  localStorage.removeItem('loggedInUser');
+  alert('Anda telah logout.');
+  window.location.href = 'index.html'; // ganti dengan halaman login/dashboard utama kamu
+}
+
+renderList();
+</script>
+</body>
+</html>

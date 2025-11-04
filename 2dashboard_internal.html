@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Produk Kopi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#f7f3ef; 
+      --card:#ffffff; 
+      --accent:#6b4226; 
+      --accent-2:#8b5e3c; 
+      --muted:#6b6b6b; 
+      --brown1:#3e2723; 
+      --brown2:#4e342e;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #222;
+    }
+
+    /* ===== Header ===== */
+header {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+header img {
+  height: 42px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+header .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-header {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-header:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+    /* ===== Halaman ===== */
+    main {
+      max-width: 980px;
+      margin: 100px auto 40px auto;
+      padding: 0 16px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Tombol Informasi (btn-kopi2 style) ===== */
+    .jenis-kopi {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .btn-kopi2 {
+      background: var(--brown2);
+      color: #fff;
+      font-size: 24px;
+      border: none;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      width: 200px;
+      height: 280px;
+      padding: 18px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      text-align: center;
+      font-family: "Lora", serif;
+    }
+
+    .btn-kopi2:hover {
+      background: var(--brown1);
+      transform: translateY(-4px);
+    }
+
+    .btn-kopi2 img {
+      width: 140px;
+      height: 140px;
+      border-radius: 20%;
+      object-fit: cover;
+    }
+
+    /* ===== Tombol Kembali ===== */
+    .btn-back {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    .btn-back:hover { background: var(--accent-2); }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 40px 0 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+ <header>
+  <div class="left">
+    <img src="https://www.gochambers.com/wp-content/uploads/2022/08/logo-6.png" alt="Logo AEKI AICE" />
+    <h1>Portal Informasi Kopi Indonesia</h1>
+  </div>
+  <div class="right">
+    <button class="btn-header" onclick="navigate('input')">Input</button>
+    <button class="btn-header" onclick="logout()">Log Out</button>
+    </header>
+
+  <!-- ===== Konten ===== -->
+  <main>
+    <!-- Halaman Home -->
+    <section id="home" class="page active">
+      <h2 style="text-align:center; font-family:'Lora',serif; color:var(--brown1)">Informasi Produk Kopi</h2>
+      <p style="text-align:center; color:var(--muted)">Pilih kategori produk yang ingin Anda jelajahi.</p>
+      <div class="jenis-kopi">
+        <button class="btn-kopi2" onclick="navigate('produk1')">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBRKI84wG3wYr5-lpFwern2Ew6-MOTnOSXA&s" alt="Biji Mentah" />
+          Biji Kopi Mentah
+        </button>
+
+        <button class="btn-kopi2" onclick="navigate('produk2')">
+          <img src="https://foto.kontan.co.id/7ruZzp79X2106j0FiB3QGhC7bNU=/smart/filters:format(webp)/2022/01/19/834952775p.jpg" alt="Biji Roasted" />
+          Biji Kopi Roasted
+        </button>
+
+        <button class="btn-kopi2" onclick="navigate('produk3')">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_U_B56aTqgv1IdfebQ_5iSgjZxS5Kr3b6rA&s" alt="Kopi Bubuk" />
+          Kopi Bubuk
+        </button>
+      </div>
+    </section>
+
+    <!-- Halaman Produk Detail -->
+    <section id="produk1" class="page">
+      <h2>Biji Kopi Mentah</h2>
+      <p>Informasi lengkap mengenai biji kopi mentah dari berbagai daerah di Indonesia.</p>
+      <button class="btn-back" onclick="navigate('home')">← Kembali</button>
+    </section>
+
+    <section id="produk2" class="page">
+      <h2>Biji Kopi Roasted</h2>
+      <p>Profil sangrai, cita rasa, dan rekomendasi seduh biji kopi roasted.</p>
+      <button class="btn-back" onclick="navigate('home')">← Kembali</button>
+    </section>
+
+    <section id="produk3" class="page">
+      <h2>Kopi Bubuk</h2>
+      <p>Kopi bubuk siap seduh dengan aroma khas dan tingkat kehalusan beragam.</p>
+      <button class="btn-back" onclick="navigate('home')">← Kembali</button>
+    </section>
+
+    <!-- Halaman Input -->
+    <section id="input" class="page">
+      <h2>Halaman Input Produk</h2>
+      <p>Tempat untuk menambahkan data produk kopi baru.</p>
+      <button class="btn-back" onclick="navigate('home')">← Kembali</button>
+    </section>
+
+  </main>
+
+  <footer>
+    © 2025 Portal Informasi Kopi Indonesia
+  </footer>
+
+  <!-- ===== Script Routing ===== -->
+  <script>
+    function navigate(pageId) {
+     // Jika tombol input diklik → buka file form_input.html
+    if (pageId === 'input') {
+      window.location.href = "3form_input.html";
+      return;
+    }
+
+// Jika tombol biji kopi mentah diklik → buka URL berbeda
+  if (pageId === 'produk1') {
+    window.location.href = "int_mentah.html";
+    return;
+  }
+  
+  // Jika tombol biji kopi roasted diklik → buka URL berbeda
+  if (pageId === 'produk2') {
+    window.location.href = "int_roasted.html";
+    return;
+  }
+  
+  // Jika tombol kopi bubuk diklik → buka URL berbeda
+  if (pageId === 'produk3') {
+    window.location.href = "int_kopi_bubuk.html";
+    return;
+  }
+
+  // Untuk navigasi antar halaman internal (seperti home, input)
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(pageId);
+  if (target) target.classList.add('active');
+  history.pushState({ page: pageId }, '', '#' + pageId);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+     
+    function logout() {
+      // Alihkan ke halaman awal+login
+      window.location.href = "index.html";
+    }
+
+    window.addEventListener('popstate', e => {
+      const hash = location.hash.replace('#', '') || 'home';
+      navigate(hash);
+    });
+
+    window.addEventListener('load', () => {
+      const hash = location.hash.replace('#', '') || 'home';
+      navigate(hash);
+    });
+  </script>
+</body>
+</html>
+

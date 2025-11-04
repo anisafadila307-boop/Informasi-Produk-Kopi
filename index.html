@@ -1,0 +1,189 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portal Informasi Kopi Indonesia</title>
+  <style>
+    :root{ --bg:#f7f3ef; --card:#ffffff; --accent:#6b4226; --accent-2:#8b5e3c; --muted:#6b6b6b; --brown1:#3e2723; --brown2:#4e342e; }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg); color:#222}
+    header{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff; padding:14px 24px; display:flex; align-items:center; justify-content:space-between}
+    header img{height:42px; margin-right:12px}
+    header .left{display:flex; align-items:center; gap:12px}
+    header h1{margin:0;font-size:18px}
+    .container{max-width:980px;margin:28px auto;padding:0 16px}
+    .card{background:var(--card); border-radius:12px; box-shadow:0 6px 18px rgba(20,20,20,0.06); padding:18px}
+    .hidden{display:none}
+    .overlay{position:fixed; inset:0;background:rgba(10,10,10,0.45); display:flex; align-items:center; justify-content:center; z-index:60}
+    .modal{width:100%; max-width:420px; background:var(--card); border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(10,10,10,0.15)}
+    .modal h2{margin:0 0 12px 0}
+    .form-row{display:flex; flex-direction:column; gap:8px}
+    input[type=text], input[type=password]{padding:10px; border-radius:8px; border:1px solid #ddd}
+    .small{font-size:13px;color:var(--muted)}
+    footer{max-width:980px;margin:22px auto;padding:0 16px; color:var(--muted); font-size:13px}
+    @media (max-width:520px){ header h1{font-size:16px} }
+
+    /* ===== Tombol Pilihan Jenis Kopi ===== */
+    .jenis-kopi {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+
+    .btn-kopi {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      padding: 8px 16px;
+      margin-left: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .btn-kopi2 {
+      background: var(--brown2);
+      color: #fff;
+      font-size: 30px;
+      border: none;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      width : 180px;
+      height: 300px;
+      padding: 18px 18px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-align: center;
+      box-sizing: border-box;
+      font-family: "Lora", serif;
+    }
+
+    .btn-kopi2:hover {
+      background: var(--brown1);
+    }
+
+    .btn-kopi2 img {
+      width: 150px;
+      height: 150px;
+      border-radius: 20%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+
+<body>
+  <header>
+    <div class="left">
+      <img src="https://www.gochambers.com/wp-content/uploads/2022/08/logo-6.png" alt="Logo AEKI AICE" />
+      <h1>Portal Informasi Kopi Indonesia</h1>
+    </div>
+    <div>
+      <button id="btnLoginHeader" class="btn-kopi" style="background:var(--accent)">Login</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="homePage" class="card">
+      <h2 style="margin:0 0 12px 0">Selamat datang di Portal Informasi</h2>
+      <p class="small">Pilih jenis kopi yang ingin Anda jelajahi.</p>
+
+      <!-- ===== Tombol Pilihan Jenis Kopi ===== -->
+      <div class="jenis-kopi">
+        <button class="btn-kopi2" onclick="window.location.href='biji_mentah.html'">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbBRKI84wG3wYr5-lpFwern2Ew6-MOTnOSXA&s" alt="Biji Mentah" />
+          Biji Kopi Mentah
+        </button>
+
+        <button class="btn-kopi2" onclick="window.location.href='biji_roasted.html'">
+          <img src="https://foto.kontan.co.id/7ruZzp79X2106j0FiB3QGhC7bNU=/smart/filters:format(webp)/2022/01/19/834952775p.jpg" alt="Biji Roasted" />
+          Biji Kopi Roasted
+        </button>
+
+        <button class="btn-kopi2" onclick="window.location.href='kopi_bubuk.html'">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_U_B56aTqgv1IdfebQ_5iSgjZxS5Kr3b6rA&s" alt="Kopi Bubuk" />
+          Kopi Bubuk
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Asosiasi Eksportir dan Industri Kopi Indonesia (AEKI) · Semua hak cipta dilindungi.
+  </footer>
+
+  <!-- Modal Template -->
+  <template id="modalTemplate">
+    <div class="overlay" role="dialog" aria-modal="true">
+      <div class="modal">
+        <h2>Login</h2>
+        <form id="loginForm" action="/login" method="POST">
+          <div class="form-row">
+            <label class="small">Email atau Username</label>
+            <input type="text" name="username" id="loginUser" required placeholder="contoh@domain.com" />
+            <label class="small">Kata Sandi</label>
+            <input type="password" name="password" id="loginPass" required placeholder="••••••" />
+            <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end">
+              <button type="button" id="loginCancel" class="btn-kopi" style="background:transparent; color:var(--accent-2); border:1px dashed rgba(107,66,38,0.12)">Batal</button>
+              <button type="submit" class="btn-kopi" style="background:var(--accent)">Masuk</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // ====== FUNGSI LOGIN (gabungan kode awal kamu) ======
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const validUser = "admin";
+      const validPass = "kopi123";
+
+      if (username === validUser && password === validPass) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("lastPage", "index.html");
+        window.location.href = "2dashboard_internal.html";
+      } else {
+        alert("Username atau password salah!");
+      }
+    }
+
+    // ===== Modal Login =====
+    document.getElementById('btnLoginHeader').addEventListener('click', () => {
+      const tpl = document.getElementById('modalTemplate');
+      const node = tpl.content.cloneNode(true);
+      document.body.appendChild(node);
+
+      const overlay = document.querySelector('.overlay');
+      const cancel = document.getElementById('loginCancel');
+      cancel.addEventListener('click', () => overlay.remove());
+      overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.remove(); });
+
+      // Saat form disubmit → panggil fungsi login()
+      document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        login(); // panggil fungsi utama login
+      });
+    });
+
+    // Tutup modal dengan tombol ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const ov = document.querySelector('.overlay');
+        if (ov) ov.remove();
+      }
+    });
+  </script>
+</body>
+</html>
