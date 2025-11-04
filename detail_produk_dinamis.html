@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -111,6 +111,22 @@
       <footer class="pm-foot">Informasi ini adalah deskriptif. Data teknis dan rekomendasi dihasilkan otomatis dari input produk.</footer>
     </div>
   </div>
+
+<!-- === Firebase Logic (disisipkan tanpa ubah kode lain) === -->
+  <script type="module">
+    import { db } from "./firebase-init.js";
+    import { ref, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+    const id = localStorage.getItem("produkId");
+    if (id) {
+      const dataRef = ref(db, "produk/" + id);
+      const snapshot = await get(dataRef);
+      const p = snapshot.val();
+      if (p) {
+        localStorage.setItem('produkDetail', JSON.stringify(p));
+      }
+    }
+  </script>
 
 <script>
 // === JS dari detail_logic.js + logika kembali otomatis ===
