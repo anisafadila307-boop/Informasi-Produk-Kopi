@@ -102,12 +102,10 @@ button:hover{background:var(--brown3);}
     <button type="submit">Simpan Produk</button>
   </form>
 
-  <a href="2dashboard_internal.html" class="back-dashboard" onclick="resetEdit()">← Kembali ke Dashboard</a>
+  <a href="2dashboard_internal.html" class="back-dashboard">← Kembali ke Dashboard</a>
 </div>
 
 <script>
-const LS_KEY='produkKopiLengkap_v3';
-
 function setJenis(j){
   document.getElementById('jenis').value=j;
   document.getElementById('kadarAir').style.display=j==='Biji Kopi Mentah'?'block':'none';
@@ -116,96 +114,101 @@ function setJenis(j){
 }
 
 // preview gambar
- function previewImage(input,targetId){
-   const file=input.files[0];const img=document.getElementById(targetId);
-   if(!file){img.style.display='none';return;}
-   const reader=new FileReader();
-   reader.onload=e=>{
-     img.src=e.target.result;
-     img.style.display='block';
-   };
-   reader.readAsDataURL(file);
- }
-document.getElementById('gambarProfil').addEventListener('change',e=>previewImage(e.target,'previewProfil'));
-
-
-// cek apakah edit mode
-const editMode=localStorage.getItem('editMode')==='true';
-const editData=JSON.parse(localStorage.getItem('produkEdit')||'null');
-const editIndex=localStorage.getItem('produkEditIndex');
-
-if(editMode && editData){
-  Object.keys(editData).forEach(k=>{
-    if(document.getElementById(k))document.getElementById(k).value=editData[k]||'';
-  });
-  if(editData.jenis)setJenis(editData.jenis);
-  if(editData.gambarProfil){
-    previewProfil.src=editData.gambarProfil;
-    previewProfil.style.display='block';
-  }
-}else{
-  resetEdit();
-}
-
-function resetEdit(){
-  localStorage.removeItem('produkEdit');
-  localStorage.removeItem('produkEditIndex');
-  localStorage.removeItem('editMode');
-}
-
-document.getElementById('produkForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const jenis=document.getElementById('jenis').value;
-  if(!jenis)return alert('Pilih jenis kopi terlebih dahulu!');
-
-  const produk={
-    nama:nama.value.trim(),
-    jenis,grade:grade.value.trim(),asal:asal.value.trim(),
-    harga:harga.value.trim(),moisture:moisture.value.trim(),
-    defect:defect.value.trim(),ukuran:ukuran.value.trim(),
-    deskripsi:deskripsi.value.trim(),aroma:aroma.value.trim(),
-    rasa:rasa.value.trim(),keasaman:keasaman.value,body:body.value,
-    gambarProfil:previewProfil.src,tanggal:Date.now()
+function previewImage(input,targetId){
+  const file=input.files[0];const img=document.getElementById(targetId);
+  if(!file){img.style.display='none';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    img.src=e.target.result;
+    img.style.display='block';
   };
-
-  const data=JSON.parse(localStorage.getItem(LS_KEY)||'[]');
-  if(editMode && editIndex!==null){data[editIndex]=produk;}
-  else data.push(produk);
-  localStorage.setItem(LS_KEY,JSON.stringify(data));
-
-  resetEdit();
-  alert('Produk berhasil disimpan!');
-
-  if(jenis==='Biji Kopi Mentah')location.href='int_mentah.html';
-  else if(jenis==='Biji Kopi Roasted')location.href='int_roasted.html';
-  else location.href='int_kopi_bubuk.html';
-});
+  reader.readAsDataURL(file);
+}
+document.getElementById('gambarProfil').addEventListener('change',e=>previewImage(e.target,'previewProfil'));
 </script>
 
+<!-- Firebase Simpan Data -->
 <script type="module">
   import { db } from "./firebase-init.js";
-  import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+  import { ref, set, update, get, child } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
   const form = document.getElementById("produkForm");
+  const jenisInput = document.getElementById("jenis");
+  const preview = document.getElementById("previewProfil");
+  const produkId = sessionStorage.getItem("produkEditId"); // ID produk yang mau diedit
 
+  // --- Mode Edit: Ambil data dari Firebase dan tampilkan di form ---
+  if (produkId) {
+    const dbRef = ref(db);
+    get(child(dbRef, "produk/" + produkId)).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Isi form dengan data yang sudah ada
+        for (const key in data) {
+          if (document.getElementById(key)) {
+            document.getElementById(key).value = data[key];
+          }
+        }
+        if (data.jenis) setJenis(data.jenis);
+        if (data.gambarProfil) {
+          preview.src = data.gambarProfil;
+          preview.style.display = "block";
+        }
+      } else {
+        console.log("Data produk tidak ditemukan.");
+      }
+    }).catch((error) => {
+      console.error("Gagal memuat data:", error);
+    });
+  }
+
+  // --- Simpan Perubahan atau Tambah Baru ---
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const jenis = jenisInput.value;
+    if (!jenis) {
+      alert("Pilih jenis kopi terlebih dahulu!");
+      return;
+    }
+
     const dataProduk = {
-      nama: document.getElementById("nama").value,
-      kategori: document.getElementById("kategori").value,
-      harga: document.getElementById("harga").value,
-      deskripsi: document.getElementById("deskripsi").value,
-      gambarProfil: document.getElementById("previewProfil").src || "",
+      nama: document.getElementById("nama").value.trim(),
+      jenis,
+      grade: document.getElementById("grade").value.trim(),
+      asal: document.getElementById("asal").value.trim(),
+      harga: document.getElementById("harga").value.trim(),
+      moisture: document.getElementById("moisture").value.trim(),
+      defect: document.getElementById("defect").value.trim(),
+      ukuran: document.getElementById("ukuran").value.trim(),
+      deskripsi: document.getElementById("deskripsi").value.trim(),
+      aroma: document.getElementById("aroma").value.trim(),
+      rasa: document.getElementById("rasa").value.trim(),
+      keasaman: document.getElementById("keasaman").value,
+      body: document.getElementById("body").value,
+      gambarProfil: preview.src || "",
       tanggal: Date.now()
     };
 
-    const newRef = push(ref(db, "produk/"));
-    await set(newRef, dataProduk);
-    alert("Data produk berhasil disimpan!");
-    form.reset();
+    try {
+      if (produkId) {
+        // Mode edit: update produk yang sudah ada
+        await update(ref(db, "produk/" + produkId), dataProduk);
+        alert("Produk berhasil diperbarui di Firebase!");
+        sessionStorage.removeItem("produkEditId");
+      } else {
+        // Mode tambah baru
+        const newRef = push(ref(db, "produk/"));
+        await set(newRef, dataProduk);
+        alert("Produk baru berhasil disimpan ke Firebase!");
+      }
+      form.reset();
+      preview.style.display = "none";
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat menyimpan data.");
+    }
   });
 </script>
-
 </body>
 </html>
