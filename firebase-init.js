@@ -1,25 +1,36 @@
-<script type="module">
-  import { db } from "./firebase-init.js";
-  import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+// firebase-init.js
+// Firebase modular SDK v12.5.0 — kompatibel GitHub & Netlify
 
-  const form = document.getElementById("produkForm");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+// ================================
+// Konfigurasi Firebase
+// ================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCsT69zgTNJKYw9txNsaXYRMFnWz8BOtBo",
+  authDomain: "new-new-aekiweb.firebaseapp.com",
+  projectId: "new-new-aekiweb",
+  storageBucket: "new-new-aekiweb.appspot.com",
+  messagingSenderId: "726151356673",
+  appId: "1:726151356673:web:9d23c689b2b250119b3b00",
+  measurementId: "G-MX3N5HL1Q3",
+  databaseURL: "https://new-new-aekiweb-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
-    const dataProduk = {
-      nama: document.getElementById("nama").value,
-      harga: document.getElementById("harga").value,
-      deskripsi: document.getElementById("deskripsi").value,
-      gambarProfil: document.getElementById("previewProfil").src || "",
-      tanggal: Date.now()
-    };
+// ================================
+// Inisialisasi Firebase
+// ================================
+const app = initializeApp(firebaseConfig);
 
-    // Simpan ke Firebase Realtime Database
-    const newRef = push(ref(db, "produk/"));
-    await set(newRef, dataProduk);
+// ================================
+// Layanan Firebase
+// ================================
+const db = getDatabase(app);       // Realtime Database
+const storage = getStorage(app);   // Storage untuk gambar
 
-    alert("Data produk berhasil disimpan ke Firebase!");
-    form.reset();
-  });
-</script>
+// ================================
+// Ekspor
+// ================================
+export { app, db, storage };
