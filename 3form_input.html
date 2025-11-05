@@ -116,13 +116,16 @@ function setJenis(j){
 }
 
 // preview gambar
-function previewImage(input,targetId){
-  const file=input.files[0];const img=document.getElementById(targetId);
-  if(!file){img.style.display='none';return;}
-  const reader=new FileReader();
-  reader.onload=e=>{img.src=e.target.result;img.style.display='block';};
-  reader.readAsDataURL(file);
-}
+ function previewImage(input,targetId){
+   const file=input.files[0];const img=document.getElementById(targetId);
+   if(!file){img.style.display='none';return;}
+   const reader=new FileReader();
+   reader.onload=e=>{
+     img.src=e.target.result;
+     img.style.display='block';
+   };
+   reader.readAsDataURL(file);
+ }
 document.getElementById('gambarProfil').addEventListener('change',e=>previewImage(e.target,'previewProfil'));
 
 
@@ -136,7 +139,10 @@ if(editMode && editData){
     if(document.getElementById(k))document.getElementById(k).value=editData[k]||'';
   });
   if(editData.jenis)setJenis(editData.jenis);
-  if(editData.gambarProfil){previewProfil.src=editData.gambarProfil;previewProfil.style.display='block';}
+  if(editData.gambarProfil){
+    previewProfil.src=editData.gambarProfil;
+    previewProfil.style.display='block';
+  }
 }else{
   resetEdit();
 }
@@ -174,6 +180,7 @@ document.getElementById('produkForm').addEventListener('submit',e=>{
   else if(jenis==='Biji Kopi Roasted')location.href='int_roasted.html';
   else location.href='int_kopi_bubuk.html';
 });
+</script>
 
 <script type="module">
   import { db } from "./firebase-init.js";
