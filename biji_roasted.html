@@ -195,138 +195,44 @@ input[type=text], input[type=password]{padding:10px; border-radius:8px; border:1
   </div>
 </template>
 
-<script>
-/* ====== Data Produk dari LocalStorage ====== */
-const LS_KEY = 'produkKopiLengkap_v3';
-let data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-const list = document.getElementById('produkList');
-const roasted = data.filter(p => p.jenis === 'Biji Kopi Roasted');
-
-/* ====== Render Daftar Produk ====== */
-function renderList(){
-  list.innerHTML = '';
-  const roasted = data.filter(p => p.jenis === 'Biji Kopi Roasted');
-  if(!roasted.length){
-    list.innerHTML = '<p style="text-align:center;color:#777;">Belum ada produk biji kopi roasted.</p>';
-    return;
-  }
-  roasted.forEach((p, i)=>{
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `
-      <h3>${p.nama}</h3>
-      <p><b>Asal:</b> ${p.asal}</p>
-      <p><b>Grade:</b> ${p.grade}</p>
-      <p><b>Harga:</b> Rp ${Number(p.harga||0).toLocaleString()}</p>      
-      ${p.gambarProfil ? `<img src="${p.gambarProfil}" style="max-width:200px;border-radius:10px;margin-top:10px;">` : ''}
-      <div class="btn-group">
-        <button class="btn-detail" onclick="lihatDetail(${i})">Lihat Detail</button>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-/* ====== Fungsi Login Modal ====== */
-document.addEventListener('click', e =>{
-  if(e.target.id === 'btnLoginHeader'){
-    openLoginModal();
-  }
-});
-function openLoginModal(){
-  const tpl = document.getElementById('modalTemplate');
-  const node = tpl.content.cloneNode(true);
-  document.body.appendChild(node);
-  const overlay = document.querySelector('.overlay');
-  const cancel = document.getElementById('loginCancel');
-  cancel.addEventListener('click', closeTopModal);
-  overlay.addEventListener('click', (ev) => { if(ev.target === overlay) closeTopModal(); });
-  function closeTopModal(){ const ov = document.querySelector('.overlay'); if(ov) ov.remove(); }
-}
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape'){
-    const ov = document.querySelector('.overlay');
-    if(ov) ov.remove();
-  }
-});
-document.addEventListener('submit', (e) => {
-  if (e.target.id === 'loginForm') {
-    e.preventDefault();
-    const user = document.getElementById('loginUser').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    const validUser = "admin";
-    const validPass = "kopi123";
-    if (user === validUser && pass === validPass) {
-      const ov = document.querySelector('.overlay');
-      if (ov) ov.remove();
-      window.location.href = "2dashboard_internal.html";
-    } else {
-      alert("Username atau kata sandi salah. Silakan coba lagi.");
-    }
-  }
-});
-
-function lihatDetail(index){
-  const roasted=data.filter(p=>p.jenis==='Biji Kopi Roasted');
-  const produk=roasted[index];
-  if(produk){
-    localStorage.setItem('produkDetail',JSON.stringify(produk));
-    localStorage.setItem('lastPage','int_roasted.html');
-    window.location.href='detail_produk_dinamis.html';
-  }
-}
-
-// Fungsi pemuatan data detail (dipakai di halaman detail_produk_dinamis.html)
-function loadDetailProduk(){
-  const produk=JSON.parse(localStorage.getItem('produkDetail'));
-  if(!produk) return;
-  document.body.innerHTML=`
-    <a href="${localStorage.getItem('lastPage')||'int_roasted.html'}" 
-       style="display:inline-block;margin:20px;background:#6b4226;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;">← Kembali</a>
-    <div style="max-width:600px;margin:40px auto;background:white;padding:30px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);text-align:center;">
-      <h2>${produk.nama}</h2>
-      ${produk.gambarProfil?`<img src="${produk.gambarProfil}" style="width:300px;height:200px;object-fit:cover;border-radius:10px;margin:10px 0;">`:''}
-      <p><b>Jenis:</b> ${produk.jenis}</p>
-      <p><b>Asal:</b> ${produk.asal}</p>
-      <p><b>Grade:</b> ${produk.grade}</p>
-      <p><b>Harga:</b> Rp ${Number(produk.harga||0).toLocaleString()}</p>
-      <p><b>Deskripsi:</b> ${produk.deskripsi||'-'}</p>
-    </div>`;
-}
-
-/* ====== Jalankan ====== */
-renderList();
-</script>
-
 <!-- === Tambahan Integrasi Firebase === -->
 <script type="module">
   import { db } from "./firebase-init.js";
   import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
   const list = document.getElementById("produkList");
+
   const dataRef = ref(db, "produk/");
 
   onValue(dataRef, (snapshot) => {
     const data = snapshot.val();
-    if (!data) return;
+    list.innerHTML = ""; // Kosongkan tampilan sebelumnya
+
+    if (!data) {
+      list.innerHTML = `<p style="text-align:center;color:#777;">Belum ada produk biji kopi roasted.</p>`;
+      return;
+    }
 
     // Hapus data Firebase sebelumnya agar tidak dobel
     const existingFirebaseCards = document.querySelectorAll(".card.firebase");
     existingFirebaseCards.forEach(el => el.remove());
 
-    // Filter produk dengan kategori "Biji Kopi Roasted"
-    const roastedData = Object.values(data).filter(p => p.kategori === "Biji Kopi Roasted");
+    
+    // Filter hanya produk jenis "Biji Kopi Roasted"
+    const roastedData = Object.entries(data)
+      .filter(([id, p]) => p.jenis === "Biji Kopi Roasted");
 
-    // Tambahkan produk dari Firebase
-    roastedData.forEach((p) => {
+    roastedData.forEach(([id, p]) => {
       const div = document.createElement("div");
-      div.className = "card firebase"; // penanda bahwa ini data dari Firebase
+      div.className = "card firebase";
       div.innerHTML = `
-        <h3>${p.nama}</h3>
-        <p><b>Kategori:</b> ${p.kategori}</p>
-        <p><b>Harga:</b> Rp${p.harga}</p>
+        <h3>${p.nama || "-"}</h3>
+        <p><b>Asal:</b> ${p.asal || "-"}</p>
+        <p><b>Grade:</b> ${p.grade || "-"}</p>
+        <p><b>Harga:</b> Rp ${Number(p.harga || 0).toLocaleString()}</p>
         ${p.gambarProfil ? `<img src="${p.gambarProfil}" alt="${p.nama}">` : ""}
         <div class="btn-group">
-          <button class="btn-detail" onclick="lihatDetailFirebase('${p.id || ''}')">Lihat Detail</button>
+          <button class="btn-detail" onclick="lihatDetailFirebase('${id}')">Lihat Detail</button>
         </div>
       `;
       list.appendChild(div);
@@ -337,11 +243,55 @@ renderList();
   window.lihatDetailFirebase = function(id) {
     localStorage.setItem("produkId", id);
     localStorage.setItem("lastPage", "int_roasted.html");
-    window.location.href = "halaman_detail_dinamis.html";
+    window.location.href = "detail_produk_dinamis.html";
   };
 </script>
 <!-- === Akhir Tambahan Integrasi Firebase === -->
 
+
+<!-- ===== Modal Login ===== -->
+<script>
+document.addEventListener('click', e => {
+  if (e.target.id === 'btnLoginHeader') {
+    openLoginModal();
+  }
+});
+
+function openLoginModal() {
+  const tpl = document.getElementById('modalTemplate');
+  const node = tpl.content.cloneNode(true);
+  document.body.appendChild(node);
+  const overlay = document.querySelector('.overlay');
+  const cancel = document.getElementById('loginCancel');
+  cancel.addEventListener('click', closeTopModal);
+  overlay.addEventListener('click', ev => { if (ev.target === overlay) closeTopModal(); });
+  function closeTopModal() { const ov = document.querySelector('.overlay'); if (ov) ov.remove(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const ov = document.querySelector('.overlay');
+    if (ov) ov.remove();
+  }
+});
+
+document.addEventListener('submit', e => {
+  if (e.target.id === 'loginForm') {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const validUser = "admin";
+    const validPass = "kopi123";
+    if (user === validUser && pass === validPass) {
+      const ov = document.querySelector('.overlay');
+      if (ov) ov.remove();
+      window.location.href = "2dashboard_internal.html"; // ke halaman admin
+    } else {
+      alert("Username atau kata sandi salah. Silakan coba lagi.");
+    }
+  }
+});
+</script>
 
 </body>
 </html>
