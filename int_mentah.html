@@ -162,7 +162,7 @@ header .right {
     existingFirebaseCards.forEach(el => el.remove());
 
     // Filter produk dengan kategori "Biji Kopi Mentah"
-    const mentahData = Object.entries(data).filter(([id, p]) => p.kategori === "Biji Kopi Mentah");
+    const mentahData = Object.entries(data).filter(([id, p]) => p.jenis === "Biji Kopi Mentah");
 
     // Tambahkan produk dari Firebase
     mentahData.forEach(([id, p]) => {
@@ -219,4 +219,5 @@ function logout() {
 
 </body>
 </html>
+
 
