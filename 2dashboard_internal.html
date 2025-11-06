@@ -185,6 +185,10 @@ header .right {
       </div>
     </section>
 
+    <!-- Wadah untuk data produk dari Firebase -->
+       <div id="daftarProduk" style="max-width:800px;margin:40px auto;"></div>
+    </section>
+    
     <!-- Halaman Produk Detail -->
     <section id="produk1" class="page">
       <h2>Biji Kopi Mentah</h2>
@@ -280,13 +284,17 @@ header .right {
   onValue(dataRef, (snapshot) => {
     container.innerHTML = ""; // reset tampilan
     const data = snapshot.val();
+    if (!data) {
+      container.innerHTML = "<p style='text-align:center;color:#777;'>Belum ada data produk.</p>";
+      return;
+    }
     for (const id in data) {
       const p = data[id];
       container.innerHTML += `
-        <div class="card">
+        <div class="card" style="background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);padding:16px;margin-bottom:16px;">
           <h3>${p.nama}</h3>
-          <p>Kategori: ${p.kategori}</p>
-          <p>Harga: Rp${p.harga}</p>
+          <p>Jenis: ${p.jenis}</p>
+          <p>Harga: Rp ${Number(p.harga||0).toLocaleString()}</p>
           <button onclick="detailProduk('${id}')">Lihat Detail</button>
         </div>
       `;
@@ -295,6 +303,12 @@ header .right {
  }
 </script>
 
+<script>
+function detailProduk(id) {
+  sessionStorage.setItem("produkDetailId", id);
+  window.location.href = "detail_produk_dinamis.html";
+}
+</script>
 </body>
 </html>
 
