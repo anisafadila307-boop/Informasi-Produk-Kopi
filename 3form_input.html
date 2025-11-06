@@ -130,7 +130,7 @@ document.getElementById('gambarProfil').addEventListener('change',e=>previewImag
 <!-- Firebase Simpan Data -->
 <script type="module">
   import { db } from "./firebase-init.js";
-  import { ref, set, update, get, child } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+  import { ref, set, update, get, child, push } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
   const form = document.getElementById("produkForm");
   const jenisInput = document.getElementById("jenis");
@@ -204,6 +204,7 @@ document.getElementById('gambarProfil').addEventListener('change',e=>previewImag
       }
       form.reset();
       preview.style.display = "none";
+      window.location.href = "2dashboard_internal.html"; // kembali ke dashboard
     } catch (err) {
       console.error(err);
       alert("Terjadi kesalahan saat menyimpan data.");
@@ -212,3 +213,4 @@ document.getElementById('gambarProfil').addEventListener('change',e=>previewImag
 </script>
 </body>
 </html>
+
