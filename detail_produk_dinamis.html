@@ -112,143 +112,138 @@
     </div>
   </div>
 
-<!-- === Firebase Logic (disisipkan tanpa ubah kode lain) === -->
-  <script type="module">
-    import { db } from "./firebase-init.js";
-    import { ref, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+<!-- === Firebase Logic (tanpa localStorage, langsung ambil dari Firebase) === -->
+<script type="module">
+  import { db } from "./firebase-init.js";
+  import { ref, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
-    const id = localStorage.getItem("produkId");
-    if (id) {
+  async function ambilDataFirebaseDanTampilkan() {
+    const id = localStorage.getItem("produkId"); // id dikirim dari int_mentah.html
+    if (!id) {
+      alert("ID produk tidak ditemukan.");
+      return;
+    }
+
+    try {
       const dataRef = ref(db, "produk/" + id);
       const snapshot = await get(dataRef);
-      const p = snapshot.val();
-      if (p) {
-        localStorage.setItem('produkDetail', JSON.stringify(p));
+      const produk = snapshot.val();
+
+      if (!produk) {
+        alert("Data produk tidak ditemukan di Firebase.");
+        return;
       }
+
+      // --- tampilkan data produk ---
+      tampilkanProduk(produk);
+
+    } catch (err) {
+      console.error("Gagal mengambil data produk dari Firebase:", err);
+      alert("Terjadi kesalahan saat memuat data produk.");
     }
-  </script>
-
-<script>
-// === JS dari detail_logic.js + logika kembali otomatis ===
-function mapKeasamanToScore(t){t=(t||"").toLowerCase();if(t.includes('tinggi'))return 8;if(t.includes('sedang'))return 5;if(t.includes('rendah'))return 2;return 5;}
-function mapBodyToScore(t){t=(t||"").toLowerCase();if(t.includes('penuh'))return 9;if(t.includes('sedang'))return 6;if(t.includes('ringan'))return 3;return 5;}
-function analyzeAromaRasa(a,r){a=(a||"").toLowerCase();r=(r||"").toLowerCase();let aromaScore=5;['floral','fruity','nutty','chocolate','cocoa','caramel','herbal','spice','citrus','vanilla','berry'].forEach(k=>{if(a.includes(k))aromaScore++;if(r.includes(k))aromaScore+=0.6;});aromaScore=Math.min(10,Math.max(0,Math.round(aromaScore)));let sweetness=4;['caramel','honey','sweet','sugar','chocolate','cocoa','vanilla','fruit','fruity','berry'].forEach(k=>{if(r.includes(k)||a.includes(k))sweetness++;});let aftertaste=5;if(r.includes('panjang'))aftertaste=8;if(r.includes('pendek'))aftertaste=3;return{aromaScore,sweetness,aftertaste};}
-function computeRoastSuitability(b,a){const light=Math.round((10-b)*8+a*3);const medium=Math.round((10-Math.abs(b-6))*6+a*2);const medDark=Math.round(b*7-a*1.5);const dark=Math.round(b*6+(10-a)*2);const arr=[light,medium,medDark,dark];const max=Math.max(...arr,1);return arr.map(v=>Math.round((v/max)*100));}
-
-function renderRadar(values){
-  const ctx=document.getElementById('radarTaste').getContext('2d');
-  if(window.radarChart)window.radarChart.destroy();
-  window.radarChart=new Chart(ctx,{
-    type:'radar',
-    data:{labels:['Sweetness','Acidity','Body','Aroma','Aftertaste'],
-      datasets:[{data:values,fill:true,backgroundColor:'rgba(199,123,0,0.18)',borderColor:'rgba(199,123,0,0.9)',pointBackgroundColor:'rgba(199,123,0,0.9)'}]},
-    options:{scales:{r:{beginAtZero:true,max:10,grid:{color:'rgba(255,255,255,0.04)'},angleLines:{color:'rgba(255,255,255,0.03)'}}},plugins:{legend:{display:false}}}
-  });
-}
-
-function renderBar(vals){
-  const ctx=document.getElementById('barRoast').getContext('2d');
-  if(window.barChart)window.barChart.destroy();
-  window.barChart=new Chart(ctx,{
-    type:'bar',
-    data:{labels:['Light','Medium','Medium-Dark','Dark'],datasets:[{data:vals,borderRadius:6,backgroundColor:'rgba(199,123,0,0.9)'}]},
-    options:{scales:{y:{beginAtZero:true,max:100}},plugins:{legend:{display:false}}}
-  });
-}
-
-function tampilkanProduk(produk){
-  if(!produk){ alert('Data produk tidak ditemukan.'); return; }
-  document.getElementById('detailNama').textContent = produk.nama || '—';
-  document.getElementById('detailSub').textContent = (produk.jenis || '') + " • " + (produk.asal || '');
-  document.getElementById('detailImgHero').src = produk.gambarProfil || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format';
-  document.getElementById('pillAsal').textContent = produk.asal || '—';
-  document.getElementById('pillHarga').textContent = "Rp " + Number(produk.harga||0).toLocaleString('id');
-  document.getElementById('pillJenis').textContent = produk.jenis || '—';
-  document.getElementById('detailRingkasan').textContent = produk.deskripsi || '—';
-  document.getElementById('asideNama').textContent = produk.nama || '—';
-  document.getElementById('asideAsal').textContent = produk.asal || '—';
-  document.getElementById('asideHarga').textContent = "Rp " + Number(produk.harga||0).toLocaleString('id');
-  document.getElementById('dlGrade').textContent = produk.grade || '—';
-  document.getElementById('dlMoisture').textContent = produk.moisture || '—';
-  document.getElementById('dlDefect').textContent = produk.defect || '—';
-  document.getElementById('dlScreen').textContent = produk.ukuran || '—';
-
-  const tagList = document.getElementById('tagList');
-  tagList.innerHTML = '';
-  [produk.jenis, produk.asal, 'Product'].forEach(t=>{ if(t){ const s=document.createElement('span'); s.className='pill'; s.textContent=t; tagList.appendChild(s);} });
-
-  const tastePills = document.getElementById('tastePills');
-  tastePills.innerHTML = '';
-  ['Body: '+(produk.body||'—'), 'Keasaman: '+(produk.keasaman||'—'), 'Aroma: '+(produk.aroma||'—'), 'Rasa: '+(produk.rasa||'—')].forEach(p=>{
-    const el=document.createElement('span');el.className='pill';el.textContent=p;tastePills.appendChild(el);
-  });
-
-  const acidityScore = mapKeasamanToScore(produk.keasaman);
-  const bodyScore = mapBodyToScore(produk.body);
-  const { aromaScore, sweetness, aftertaste } = analyzeAromaRasa(produk.aroma, produk.rasa);
-  const radarData = [sweetness, acidityScore, bodyScore, aromaScore, aftertaste];
-  const roastVals = computeRoastSuitability(bodyScore, acidityScore);
-  renderRadar(radarData);
-  renderBar(roastVals);
-
-  // QR
-  const qrContainer = document.getElementById('qrContainer');
-  qrContainer.innerHTML = '';
-  const slug = (produk.nama||'produk').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
-  const url = `https://kopi.id/produk/${slug}`;
-  new QRCode(qrContainer, { text: url, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff" });
-  const downloadContainer = document.getElementById('downloadContainer');
-  downloadContainer.innerHTML = '';
-  const btn = document.createElement('button');
-  btn.textContent = "📥 Unduh QR Produk";
-  btn.style.background="#d7b899";btn.style.color="#3e2723";btn.style.border="none";btn.style.padding="8px 12px";btn.style.borderRadius="8px";btn.style.cursor="pointer";
-  btn.onclick = () => {
-    const img = qrContainer.querySelector("img")||qrContainer.querySelector("canvas");
-    if(img){
-      const a = document.createElement('a');
-      a.href = img.src || img.toDataURL("image/png");
-      a.download = slug + "-qr.png";
-      a.click();
-    }
-  };
-  downloadContainer.appendChild(btn);
-}
-
-
-
-window.addEventListener('load', ()=>{
-  const produk = JSON.parse(localStorage.getItem('produkDetail') || 'null');
-  if (produk) tampilkanProduk(produk);
-  else {
-    const all = JSON.parse(localStorage.getItem('produkKopiLengkap_v3') || '[]');
-    if(all && all.length) tampilkanProduk(all.slice(-1)[0]);
-    else alert('Data produk tidak ditemukan.');
   }
-});
 
-// Jalankan seluruh logika setelah DOM siap
-window.addEventListener('DOMContentLoaded', () => {
-  // Pastikan tombol "Kembali" sudah ada
-  const btnKembali = document.getElementById('btnKembali');
-  if (!btnKembali) return; // Jika tombol tidak ditemukan, hentikan fungsi
+  // === Fungsi-fungsi perhitungan & tampilan ===
+  function mapKeasamanToScore(t){t=(t||"").toLowerCase();if(t.includes('tinggi'))return 8;if(t.includes('sedang'))return 5;if(t.includes('rendah'))return 2;return 5;}
+  function mapBodyToScore(t){t=(t||"").toLowerCase();if(t.includes('penuh'))return 9;if(t.includes('sedang'))return 6;if(t.includes('ringan'))return 3;return 5;}
+  function analyzeAromaRasa(a,r){a=(a||"").toLowerCase();r=(r||"").toLowerCase();let aromaScore=5;['floral','fruity','nutty','chocolate','cocoa','caramel','herbal','spice','citrus','vanilla','berry'].forEach(k=>{if(a.includes(k))aromaScore++;if(r.includes(k))aromaScore+=0.6;});aromaScore=Math.min(10,Math.max(0,Math.round(aromaScore)));let sweetness=4;['caramel','honey','sweet','sugar','chocolate','cocoa','vanilla','fruit','fruity','berry'].forEach(k=>{if(r.includes(k)||a.includes(k))sweetness++;});let aftertaste=5;if(r.includes('panjang'))aftertaste=8;if(r.includes('pendek'))aftertaste=3;return{aromaScore,sweetness,aftertaste};}
+  function computeRoastSuitability(b,a){const light=Math.round((10-b)*8+a*3);const medium=Math.round((10-Math.abs(b-6))*6+a*2);const medDark=Math.round(b*7-a*1.5);const dark=Math.round(b*6+(10-a)*2);const arr=[light,medium,medDark,dark];const max=Math.max(...arr,1);return arr.map(v=>Math.round((v/max)*100));}
 
-  // Pasang event listener setelah tombol terdeteksi
-  btnKembali.addEventListener('click', () => {
-    const sudahLogin = localStorage.getItem("isLoggedIn");
-    const lastPage = localStorage.getItem("lastPage");
+  function renderRadar(values){
+    const ctx=document.getElementById('radarTaste').getContext('2d');
+    if(window.radarChart)window.radarChart.destroy();
+    window.radarChart=new Chart(ctx,{
+      type:'radar',
+      data:{labels:['Sweetness','Acidity','Body','Aroma','Aftertaste'],
+        datasets:[{data:values,fill:true,backgroundColor:'rgba(199,123,0,0.18)',borderColor:'rgba(199,123,0,0.9)',pointBackgroundColor:'rgba(199,123,0,0.9)'}]},
+      options:{scales:{r:{beginAtZero:true,max:10,grid:{color:'rgba(255,255,255,0.04)'},angleLines:{color:'rgba(255,255,255,0.03)'}}},plugins:{legend:{display:false}}}
+    });
+  }
 
-    console.log("Status login:", sudahLogin, "Last page:", lastPage); // untuk debugging
+  function renderBar(vals){
+    const ctx=document.getElementById('barRoast').getContext('2d');
+    if(window.barChart)window.barChart.destroy();
+    window.barChart=new Chart(ctx,{
+      type:'bar',
+      data:{labels:['Light','Medium','Medium-Dark','Dark'],datasets:[{data:vals,borderRadius:6,backgroundColor:'rgba(199,123,0,0.9)'}]},
+      options:{scales:{y:{beginAtZero:true,max:100}},plugins:{legend:{display:false}}}
+    });
+  }
 
-    if (sudahLogin === "true") {
-      window.location.href = "2dashboard_internal.html";
-    } else if (lastPage) {
-      window.location.href = lastPage;
-    } else {
-      window.location.href = "index.html";
-    }
+  function tampilkanProduk(produk){
+    if(!produk){ alert('Data produk tidak ditemukan.'); return; }
+
+    // --- isi data produk ke halaman ---
+    document.getElementById('detailNama').textContent = produk.nama || '—';
+    document.getElementById('detailSub').textContent = (produk.jenis || '') + " • " + (produk.asal || '');
+    document.getElementById('detailImgHero').src = produk.gambarProfil || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800&auto=format';
+    document.getElementById('pillAsal').textContent = produk.asal || '—';
+    document.getElementById('pillHarga').textContent = "Rp " + Number(produk.harga||0).toLocaleString('id');
+    document.getElementById('pillJenis').textContent = produk.jenis || '—';
+    document.getElementById('detailRingkasan').textContent = produk.deskripsi || '—';
+    document.getElementById('asideNama').textContent = produk.nama || '—';
+    document.getElementById('asideAsal').textContent = produk.asal || '—';
+    document.getElementById('asideHarga').textContent = "Rp " + Number(produk.harga||0).toLocaleString('id');
+    document.getElementById('dlGrade').textContent = produk.grade || '—';
+    document.getElementById('dlMoisture').textContent = produk.moisture || '—';
+    document.getElementById('dlDefect').textContent = produk.defect || '—';
+    document.getElementById('dlScreen').textContent = produk.ukuran || '—';
+
+    const tagList = document.getElementById('tagList');
+    tagList.innerHTML = '';
+    [produk.jenis, produk.asal, 'Product'].forEach(t=>{ if(t){ const s=document.createElement('span'); s.className='pill'; s.textContent=t; tagList.appendChild(s);} });
+
+    const tastePills = document.getElementById('tastePills');
+    tastePills.innerHTML = '';
+    ['Body: '+(produk.body||'—'), 'Keasaman: '+(produk.keasaman||'—'), 'Aroma: '+(produk.aroma||'—'), 'Rasa: '+(produk.rasa||'—')].forEach(p=>{
+      const el=document.createElement('span');el.className='pill';el.textContent=p;tastePills.appendChild(el);
+    });
+
+    const acidityScore = mapKeasamanToScore(produk.keasaman);
+    const bodyScore = mapBodyToScore(produk.body);
+    const { aromaScore, sweetness, aftertaste } = analyzeAromaRasa(produk.aroma, produk.rasa);
+    const radarData = [sweetness, acidityScore, bodyScore, aromaScore, aftertaste];
+    const roastVals = computeRoastSuitability(bodyScore, acidityScore);
+    renderRadar(radarData);
+    renderBar(roastVals);
+
+    // === QR Code ===
+    const qrContainer = document.getElementById('qrContainer');
+    qrContainer.innerHTML = '';
+    const slug = (produk.nama||'produk').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    const url = `https://kopi.id/produk/${slug}`;
+    new QRCode(qrContainer, { text: url, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff" });
+    const downloadContainer = document.getElementById('downloadContainer');
+    downloadContainer.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.textContent = "📥 Unduh QR Produk";
+    btn.style.background="#d7b899";btn.style.color="#3e2723";btn.style.border="none";btn.style.padding="8px 12px";btn.style.borderRadius="8px";btn.style.cursor="pointer";
+    btn.onclick = () => {
+      const img = qrContainer.querySelector("img")||qrContainer.querySelector("canvas");
+      if(img){
+        const a = document.createElement('a');
+        a.href = img.src || img.toDataURL("image/png");
+        a.download = slug + "-qr.png";
+        a.click();
+      }
+    };
+    downloadContainer.appendChild(btn);
+  }
+
+  // === tombol kembali ===
+  window.addEventListener('DOMContentLoaded', () => {
+    const btnKembali = document.getElementById('btnKembali');
+    if (!btnKembali) return;
+    btnKembali.addEventListener('click', () => {
+      const lastPage = localStorage.getItem("lastPage");
+      if (lastPage) window.location.href = lastPage;
+      else window.location.href = "index.html";
+    });
   });
-});
 
+  // Jalankan proses ambil data saat halaman siap
+  window.addEventListener("load", ambilDataFirebaseDanTampilkan);
 </script>
 </body>
 </html>
+
