@@ -139,134 +139,83 @@ header .right {
 <a class="btn-back" href="2dashboard_internal.html">← Kembali ke Dashboard</a>
 
 
-<script>
-const LS_KEY='produkKopiLengkap_v3';
-let data=JSON.parse(localStorage.getItem(LS_KEY)||'[]');
-const list=document.getElementById('produkList');
-
-function renderList(){
-  list.innerHTML='';
-  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
-  if(!mentah.length){
-    list.innerHTML='<p style="text-align:center;color:#777;">Belum ada produk biji kopi mentah.</p>';
-    return;
-  }
-  mentah.forEach((p,i)=>{
-    const div=document.createElement('div');
-    div.className='card';
-    div.innerHTML=`
-      <h3>${p.nama}</h3>
-      <p><b>Asal:</b> ${p.asal}</p>
-      <p><b>Grade:</b> ${p.grade}</p>
-      <p><b>Harga:</b> Rp ${Number(p.harga||0).toLocaleString()}</p>
-      ${p.gambarProfil ? `<img src="${p.gambarProfil}" style="max-width:200px;border-radius:10px;margin-top:10px;">` : ''}
-      <div class="btn-group">
-        <button class="btn-edit" onclick="editProduk(${i})">Edit</button>
-        <button class="btn-delete" onclick="hapusProduk(${i})">Hapus</button>
-        <button class="btn-detail" onclick="lihatDetail(${i})">Lihat Detail</button>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-function editProduk(index){
-  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
-  const produk=mentah[index];
-  if(produk){
-    const allIndex=data.findIndex(x=>x.nama===produk.nama&&x.jenis===produk.jenis);
-    localStorage.setItem('produkEdit',JSON.stringify(produk));
-    localStorage.setItem('produkEditIndex',allIndex);
-    localStorage.setItem('editMode','true');
-    window.location.href='3form_input.html';
-  }
-}
-
-function hapusProduk(index){
-  if(confirm("Apakah Anda yakin ingin menghapus produk ini?")){
-    const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
-    const target=mentah[index];
-    data=data.filter(p=>p!==target);
-    localStorage.setItem(LS_KEY,JSON.stringify(data));
-    renderList();
-  }
-}
-
-function lihatDetail(index){
-  const mentah=data.filter(p=>p.jenis==='Biji Kopi Mentah');
-  const produk=mentah[index];
-  if(produk){
-    localStorage.setItem('produkDetail',JSON.stringify(produk));
-    localStorage.setItem('lastPage','int_mentah.html');
-    window.location.href='detail_produk_dinamis.html';
-  }
-}
-
-document.querySelector('.btn-back').addEventListener('click',()=>{
-  localStorage.removeItem('produkEdit');
-  localStorage.removeItem('produkEditIndex');
-  localStorage.removeItem('editMode');
-});
-
-function navigateToInput() {
-  // arahkan ke halaman form input
-  window.location.href = '3form_input.html';
-}
-
-
-function logout() {
-  // hapus semua data sesi pengguna dan kembali ke halaman login/dashboard awal
-  localStorage.removeItem('loggedInUser');
-  alert('Anda telah logout.');
-  window.location.href = 'index.html'; // ganti dengan halaman login/dashboard utama kamu
-}
-
-renderList();
-</script>
 
 <!-- === Tambahan Integrasi Firebase === -->
 <script type="module">
   import { db } from "./firebase-init.js";
-  import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+  import { ref, onValue, remove } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
   const list = document.getElementById("produkList");
   const dataRef = ref(db, "produk/");
 
   onValue(dataRef, (snapshot) => {
     const data = snapshot.val();
-    if (!data) return;
+    list.innerHTML = ""; // Kosongkan tampilan sebelumnya
+
+    if (!data) {
+      list.innerHTML = `<p style="text-align:center;color:#777;">Belum ada produk biji kopi mentah.</p>`;
+      return;
+    }
 
     // Hapus data Firebase sebelumnya agar tidak dobel
     const existingFirebaseCards = document.querySelectorAll(".card.firebase");
     existingFirebaseCards.forEach(el => el.remove());
 
     // Filter produk dengan kategori "Biji Kopi Mentah"
-    const mentahData = Object.values(data).filter(p => p.kategori === "Biji Kopi Mentah");
+    const mentahData = Object.entries(data).filter(p => p.kategori === "Biji Kopi Mentah");
 
     // Tambahkan produk dari Firebase
-    mentahData.forEach((p) => {
+    mentahData.forEach(([id, p]) => {
       const div = document.createElement("div");
-      div.className = "card firebase"; // penanda bahwa ini data dari Firebase
+      div.className = "card firebase";
       div.innerHTML = `
-        <h3>${p.nama}</h3>
-        <p><b>Kategori:</b> ${p.kategori}</p>
-        <p><b>Harga:</b> Rp${p.harga}</p>
+        <h3>${p.nama || "-"}</h3>
+        <p><b>Asal:</b> ${p.asal || "-"}</p>
+        <p><b>Grade:</b> ${p.grade || "-"}</p>
+        <p><b>Harga:</b> Rp ${Number(p.harga || 0).toLocaleString()}</p>
         ${p.gambarProfil ? `<img src="${p.gambarProfil}" alt="${p.nama}">` : ""}
         <div class="btn-group">
-          <button class="btn-detail" onclick="lihatDetailFirebase('${p.id || ''}')">Lihat Detail</button>
+          <button class="btn-edit" onclick="editProduk('${id}')">Edit</button>
+          <button class="btn-delete" onclick="hapusProduk('${id}')">Hapus</button>
+          <button class="btn-detail" onclick="lihatDetailFirebase('${id}')">Lihat Detail</button>
         </div>
       `;
       list.appendChild(div);
     });
   });
 
+  // Fungsi edit produk → buka form input dengan ID produk
+  window.editProduk = function(id) {
+    sessionStorage.setItem("produkEditId", id);
+    window.location.href = "3form_input.html";
+  };
+
+  // Fungsi hapus produk dari Firebase
+  window.hapusProduk = async function(id) {
+    if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
+      await remove(ref(db, "produk/" + id));
+      alert("Produk berhasil dihapus dari Firebase!");
+    }
+  };
+
   // fungsi untuk buka halaman detail versi Firebase
   window.lihatDetailFirebase = function(id) {
     localStorage.setItem("produkId", id);
     localStorage.setItem("lastPage", "int_mentah.html");
-    window.location.href = "halaman_detail_dinamis.html";
+    window.location.href = "detail_produk_dinamis.html";
   };
 </script>
 <!-- === Akhir Tambahan Integrasi Firebase === -->
+
+<script>
+function navigateToInput() {
+  window.location.href = "3form_input.html";
+}
+function logout() {
+  alert("Anda telah logout.");
+  window.location.href = "index.html";
+}
+</script>
 
 </body>
 </html>
