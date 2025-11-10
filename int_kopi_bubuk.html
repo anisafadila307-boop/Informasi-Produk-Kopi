@@ -36,10 +36,14 @@ p.desc{text-align:center;color:#5d4037;}
   padding:20px !important;
 }
 .card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+  display: block;
   border-radius: 10px;
+  width: 100%;       /* atur ukuran tetap (misalnya 200px lebar) */
+  height: 200px;       /*tinggi*/
+  object-fit: cover;  /* potong gambar jika tidak proporsional */
+  border-radius: 10px;
+  margin: 10px 0;       /* jarak atas-bawah */
+  overflow: hidden;     /* cegah tumpah */
 }
 .card:hover{
   transform:translateY(-3px);
@@ -212,3 +216,4 @@ function logout() {
 
 </body>
 </html>
+
