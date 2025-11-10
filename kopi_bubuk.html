@@ -38,13 +38,14 @@ p.desc{text-align:center;color:#5d4037;}
 
 .card img {
   display: block;
-  margin: 10px auto;              /* gambar juga di tengah */
   border-radius: 10px;
-  width: 300px;       /* atur ukuran tetap (misalnya 200px lebar) */
+  width: 100%;       /* atur ukuran tetap (misalnya 200px lebar) */
   height: 200px;       /*tinggi*/
   object-fit: cover;  /* potong gambar jika tidak proporsional */
+  border-radius: 10px;
+  margin: 10px 0;       /* jarak atas-bawah */
+  overflow: hidden;     /* cegah tumpah */
 }
-
 .card:hover{
   transform:translateY(-3px);
   box-shadow:0 5px 15px rgba(0,0,0,0.15);
@@ -295,3 +296,4 @@ document.addEventListener('submit', e => {
 
 </body>
 </html>
+
