@@ -58,6 +58,11 @@ button:hover{background:var(--brown3);}
   padding:10px 12px;cursor:pointer;transition:background 0.3s,transform 0.2s;
 }
 .jenis-btns button:hover{background:var(--brown3);transform:translateY(-2px);}
+.jenis-btns button.active {
+  background: var(--brown3);
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
 .back-dashboard{
   display:block;text-align:center;margin:20px auto 0;
   background:var(--brown2);color:white;text-decoration:none;
@@ -107,11 +112,24 @@ button:hover{background:var(--brown3);}
 
 <script>
 function setJenis(j){
-  document.getElementById('jenis').value=j;
-  document.getElementById('kadarAir').style.display=j==='Biji Kopi Mentah'?'block':'none';
-  document.getElementById('defectValue').style.display=j==='Biji Kopi Mentah'?'block':'none';
-  document.getElementById('ukuranBiji').style.display=j==='Biji Kopi Mentah'?'block':'none';
+  document.getElementById('jenis').value = j;
+
+  // ubah tampilan tombol aktif
+  document.querySelectorAll('.jenis-btns button').forEach(btn => {
+    if (btn.textContent === j) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // tampilkan field khusus untuk biji kopi mentah
+  const isMentah = j === 'Biji Kopi Mentah';
+  document.getElementById('kadarAir').style.display = isMentah ? 'block' : 'none';
+  document.getElementById('defectValue').style.display = isMentah ? 'block' : 'none';
+  document.getElementById('ukuranBiji').style.display = isMentah ? 'block' : 'none';
 }
+
 
 // preview gambar
 function previewImage(input,targetId){
@@ -213,4 +231,5 @@ document.getElementById('gambarProfil').addEventListener('change',e=>previewImag
 </script>
 </body>
 </html>
+
 
