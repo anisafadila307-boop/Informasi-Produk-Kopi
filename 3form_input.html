@@ -59,7 +59,7 @@ button:hover{background:var(--brown3);}
 }
 .jenis-btns button:hover{background:var(--brown3);transform:translateY(-2px);}
 .jenis-btns button.active {
-  background: var(--brown3);
+  background: #a98274 !important;
   transform: scale(1.05);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
@@ -116,7 +116,7 @@ function setJenis(j){
 
   // ubah tampilan tombol aktif
   document.querySelectorAll('.jenis-btns button').forEach(btn => {
-    if (btn.textContent === j) {
+    if (btn.textContent.trim() === j.trim()) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
@@ -231,5 +231,6 @@ document.getElementById('gambarProfil').addEventListener('change',e=>previewImag
 </script>
 </body>
 </html>
+
 
 
